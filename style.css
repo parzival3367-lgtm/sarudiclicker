@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
+* {
+  box-sizing: border-box;
+}
+
 :root {
   --color-cream: #EED9C4;
   --color-green: #326e50;
@@ -19,7 +23,7 @@ body {
   text-decoration: none;
   display: grid;
   place-items: center;
-  height: 100vh;
+  min-height: 100vh;
   position: relative;
   font-family: 'Quicksand', sans-serif;
   user-select: none;
@@ -27,8 +31,10 @@ body {
 
 .main {
   display: flex;
-  gap: 200px;
-  margin-bottom: 100px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(24px, 8vw, 200px);
+  margin-bottom: 24px;
 }
 
 .left {
@@ -65,7 +71,7 @@ body {
 
 #upgrades-container {
   max-height: 400px;
-  width: 420px;
+  width: min(400px, calc(100vw - 32px));
   padding: 20px;
   overflow-y: scroll;
   border: 2px var(--color-brown) solid;
@@ -111,7 +117,7 @@ body {
   border: 3px solid var(--color-green);
   border-radius: 5px;
   height: 60px;
-  width: 330px;
+  width: 100%;
   position: relative;
   margin-bottom: 20px;
 }
@@ -169,7 +175,7 @@ body {
   background-color: burlywood;
   text-align: center;
   border: 2px solid black;
-  opacity: 0.7;
+  opacity: 0.8;
   color: black;
   font-weight: bold;
   font-size: 18px;
@@ -180,15 +186,13 @@ body {
 }
 
 .statistics {
-  position: absolute;
-  bottom: 0;
-  width: 450px;
+  position: static;
+  width: min(450px, 100%);
   padding: 30px;
   border: 2px var(--color-green) solid;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  left: 50%;
-  transform: translate(-50%)
+  margin: 0 auto;
 }
 
 .texts {
@@ -343,4 +347,32 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-green)
+}
+
+@media (max-width: 700px) {
+  body {
+    height: auto;
+    padding: 80px 16px 16px;
+  }
+
+  .main {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .right-navbar {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .right-navbar > div {
+    flex: 1 1 110px;
+    width: auto;
+  }
+
+  .texts {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
 }

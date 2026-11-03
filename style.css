@@ -220,6 +220,11 @@ body {
   cursor: pointer;
 }
 
+.util-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .relic {
   position: absolute;
   top: 20px;

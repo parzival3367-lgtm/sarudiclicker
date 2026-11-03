@@ -25,7 +25,6 @@ let sbs = 0;
 
 const musicButton = document.getElementById("music-button");
 const bgm = new Audio(new URL("./assets/audio/aria-math.mp3", import.meta.url))
-bgm.volume = 0.5
 bgm.loop = true;
 
 function incrementBuck(event) {
@@ -220,7 +219,7 @@ function prestige () {
 function renderStats() {
   sbcText.innerHTML = Math.round(sbc)
   sbsText.innerHTML = Math.round(sbs)
-  prestigeButton.style.display = parsedBuck >= 1_000_000 ? "block" : "none"
+  prestigeButton.disabled = parsedBuck < 1_000_000
 }
 
 upgrades.forEach(renderUpgradeInfo)

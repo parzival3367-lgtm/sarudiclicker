@@ -35,7 +35,7 @@ function incrementBuck(event) {
 
   const div = document.createElement('div')
   div.innerHTML = `+${Math.round(sbc)}`
-  div.style.cssText = `color: #326e50; position: absolute; top: ${y}px; left: ${x}px; font-size: 15px; pointer-events: none;`
+  div.style.cssText = `color: #326e50; position: absolute; top: ${y}px; left: ${x}px; font-size: 20px; pointer-events: none; font-weight: bold; text-shadow: 1px 1px 2px #000;`
   sarudiImgContainer.appendChild(div)
 
   div.classList.add('fade-up')

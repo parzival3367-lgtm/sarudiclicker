@@ -74,11 +74,11 @@ body {
   position: relative;
 }
 
-.pink-text {
+.brown-text {
   font-size: 32px;
-  color: var(--color-green);
   font-weight: 700;
-  text-shadow: 2px 2px 3px var(--color-text-shadow)
+  color: #785E13;
+  text-shadow: 2px 2px 3px #333333;
 }
 
 .cost-text {
@@ -88,6 +88,8 @@ body {
 .sarudi-image {
   margin-top: 50px;
   width: 300px;
+  border: 1px solid whitesmoke;
+  border-radius: 50%;
 }
 
 .sarudi-image:hover {

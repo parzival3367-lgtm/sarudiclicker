@@ -28,6 +28,7 @@ bgm.volume = 0
 
 function incrementBuck(event) {
   const clickingSound = new Audio('/assets/audio/click.wav')
+  clickingSound.getAudio().setVolume(0.5); 
   clickingSound.play().catch(() => {})
 
   parsedBuck += sbc;

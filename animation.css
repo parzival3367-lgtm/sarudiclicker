@@ -1,5 +1,5 @@
 .fade-up {
-  animation: fade-up 3s steps(100, end);
+  animation: fade-up 5s steps(100, end);
 }
 
 @keyframes fade-up {
@@ -8,7 +8,7 @@
     opacity: 1;
   }
   to {
-    transform: translateY(-300px);
+    transform: translateY(-200px);
     opacity: 0;
   }
 }

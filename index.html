@@ -12,7 +12,7 @@
     <section>
       <div class="main">
         <div class="left">
-          <p>Sarudi Bucks <br /><span class="sarudi-cost brown-text"></span></p>
+          <p>Sarudi Bucks <br /><span class="sarudi-cost brown-text">0</span></p>
           <div class="sarudi-img-container">
             <img
               src="./assets/sarudi.png"
@@ -36,15 +36,15 @@
             <div class="mid-section">
               <h4>{{name}}</h4>
               <div class="cost-info">
-                <p class="cost-text"><span class="{{name}}-cost"></span></p>
+                <p class="cost-text"><span class="{{name}}-cost">{{cost}}</span></p>
                 <img src="/assets/sarudi.png" alt="" class="sarudi-img" />
               </div>
             </div>
-            <div class="right-section">Level <span class="{{name}}-level"></span></div>
+            <div class="right-section">Level <span class="{{name}}-level">0</span></div>
 
             <div class="next-level-info" id="{{name}}-next-level">
               <p id="{{name}}-next-p">
-                +<span class="{{name}}-increase"></span> Sarudi Bucks <br /> per click
+                +<span class="{{name}}-increase">{{increase}}</span> Sarudi Bucks <br /> per click
               </p>
             </div>
           </div>
@@ -63,8 +63,8 @@
 
       <div class="statistics">
         <div class="texts">
-          <p>SBC: <span id="sbc-text" class="brown-text"></span></p>
-          <p>SBS: <span id="sbs-text" class="brown-text"></span></p>
+          <p>SBC: <span id="sbc-text" class="brown-text">1</span></p>
+          <p>SBS: <span id="sbs-text" class="brown-text">0</span></p>
         </div>
       </div>
 
@@ -76,7 +76,7 @@
       </div>
 
       <div class="relic">
-        Relic: <span id="relic"></span>
+        Relic: <span id="relic">0</span>
       </div>
       <div class="last-save">
         Last Save: <span id="last-save-text">Never</span>

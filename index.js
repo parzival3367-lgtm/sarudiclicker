@@ -1,6 +1,6 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
 import { defaultUpgradeValues } from "./constants/defaultValues.js";
-import { gameState, loadGameState, saveGameState } from "./gamestate.js";
+import { gameState, loadGameState, saveGameState } from "./api/gamestate.js";
 
 const buck = document.querySelector(".sarudi-cost");
 const sbcText = document.getElementById("sbc-text");

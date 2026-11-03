@@ -35,7 +35,7 @@ function incrementBuck(event) {
 
   const div = document.createElement('div')
   div.innerHTML = `+${Math.round(sbc)}`
-  div.style.cssText = `color: white; position: absolute; top: ${y}px; left: ${x}px; font-size: 15px; pointer-events: none;`
+  div.style.cssText = `color: #326e50; position: absolute; top: ${y}px; left: ${x}px; font-size: 15px; pointer-events: none;`
   sarudiImgContainer.appendChild(div)
 
   div.classList.add('fade-up')
@@ -83,8 +83,8 @@ function buyUpgrade(upgrade) {
 
   if (index !== -1) {
     const multiplier = mu.powerUps?.[index]?.multiplier ?? 2
-    upgradeDiv.style.cssText = `border-color: white`;
-    nextLevelDiv.style.cssText = `background-color: #5A5959; font-weight: normal`;
+    upgradeDiv.style.cssText = `border-color: #326e50`;
+    nextLevelDiv.style.cssText = `background-color: #326e50; color: #EED9C4; font-weight: normal`;
     mu.parsedCost *= mu.costMultiplier;
     mu.cost.innerHTML = Math.round(mu.parsedCost);
 
@@ -105,7 +105,7 @@ function buyUpgrade(upgrade) {
 
   if (index !== -1) {
     upgradeDiv.style.cssText = `border-color: orange`;
-    nextLevelDiv.style.cssText = `background-color: #CC4500; font-weight: bold`;
+    nextLevelDiv.style.cssText = `background-color: #8F4D36; color: #EED9C4; font-weight: bold`;
     nextLevelP.innerText = mu.powerUps?.[index]?.description ?? 'Milestone reached'
 
     mu.parsedCost *= 2.5 * 1.004 ** parseFloat(mu.level.innerHTML)
@@ -190,8 +190,8 @@ function prestige () {
 
     const upgradeDiv = document.getElementById(`${mu.name}-upgrade`)
     const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
-    upgradeDiv.style.cssText = `border-color: white`;
-    nextLevelDiv.style.cssText =  `background-color: #5A5959; font-weight: normal`;
+    upgradeDiv.style.cssText = `border-color: #326e50`;
+    nextLevelDiv.style.cssText =  `background-color: #326e50; color: #EED9C4; font-weight: normal`;
     renderUpgradeInfo(upgrade)
   })
 

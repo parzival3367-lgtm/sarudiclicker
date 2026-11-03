@@ -72,17 +72,17 @@ body {
   font-size: 18px;
 }
 
-.gem-image {
+.sarudi-image {
   margin-top: 50px;
   width: 300px;
 }
 
-.gem-image:hover {
+.sarudi-image:hover {
   opacity: 0.9;
   cursor: pointer;
 }
 
-.gem-image:active {
+.sarudi-image:active {
   opacity: 0.8;
   transform: scale(1.02);
 }
@@ -117,11 +117,11 @@ body {
   width: 55px;
 }
 
-.gem-img-container {
+.sarudi-img-container {
   position: relative;
 }
 
-.gem-img {
+.sarudi-img {
   width: 26px;
   height: 25px;
 }

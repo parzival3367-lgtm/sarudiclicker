@@ -1,42 +1,42 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
-import { defaultSkillValues, defaultUpgradeValues } from "./constants/defaultValues.js";
+import { defaultUpgradeValues } from "./constants/defaultValues.js";
 
-let gem = document.querySelector(".gem-cost");
-let parsedGem = parseFloat(gem.innerHTML);
+const buck = document.querySelector(".sarudi-cost");
+let parsedBuck = parseFloat(buck.innerHTML);
 
-let gpcText = document.getElementById("gpc-text")
-let gpsText = document.getElementById("gps-text")
+const sbcText = document.getElementById("sbc-text");
+const sbsText = document.getElementById("sbs-text");
 
-let gemImgContainer = document.querySelector('.gem-img-container')
+const sarudiImgContainer = document.querySelector('.sarudi-img-container');
 
-let upgradesNavButton = document.getElementById('upgrades-nav-button')
-let skillsNavButton = document.getElementById('skills-nav-button')
-let artifactsNavButton = document.getElementById('artifacts-nav-button')
+const upgradesNavButton = document.getElementById('upgrades-nav-button');
+const skillsNavButton = document.getElementById('skills-nav-button');
+const artifactsNavButton = document.getElementById('artifacts-nav-button');
 
-let prestigeButton = document.querySelector(".prestige-button")
+const prestigeButton = document.querySelector(".prestige-button");
 
-let relic = document.getElementById("relic")
+const relic = document.getElementById("relic");
 
-let gpc = 1;
+let sbc = 1;
+let sbs = 0;
 
-let gps = 0;
-
-const bgm = new Audio('/assets/audio/bgm.mp3')
+const bgm = new Audio('/assets/audio/aria-math.mp3')
 bgm.volume = 0
 
-function incrementGem(event) {
+function incrementBuck(event) {
   const clickingSound = new Audio('/assets/audio/click.wav')
-  clickingSound.play()
+  clickingSound.play().catch(() => {})
 
-  gem.innerHTML = Math.round(parsedGem += gpc);
+  parsedBuck += sbc;
+  buck.innerHTML = Math.round(parsedBuck);
 
-  const x = event.offsetX
-  const y = event.offsetY
+  const x = event?.offsetX ?? 0;
+  const y = event?.offsetY ?? 0;
 
   const div = document.createElement('div')
-  div.innerHTML = `+${Math.round(gpc)}`  
+  div.innerHTML = `+${Math.round(sbc)}`
   div.style.cssText = `color: white; position: absolute; top: ${y}px; left: ${x}px; font-size: 15px; pointer-events: none;`
-  gemImgContainer.appendChild(div)
+  sarudiImgContainer.appendChild(div)
 
   div.classList.add('fade-up')
 
@@ -49,112 +49,140 @@ const timeout = (div) => {
   }, 800)
 }
 
+function renderUpgradeInfo(upgrade) {
+  const nextLevelP = document.getElementById(`${upgrade.name}-next-p`)
+  const milestoneIndex = powerUpIntervals.indexOf(parseFloat(upgrade.level.innerHTML))
+
+  if (milestoneIndex !== -1) {
+    const powerUp = upgrade.powerUps?.[milestoneIndex]
+    nextLevelP.innerText = powerUp?.description ?? 'Milestone reached'
+    return
+  }
+
+  const unit = upgrade.name === 'cursor' ? 'click' : 'second'
+  nextLevelP.innerHTML = `+<span class="${upgrade.name}-increase">${upgrade.parsedIncrease}</span> Sarudi Bucks <br /> per ${unit}`
+  upgrade.increase = nextLevelP.querySelector(`.${upgrade.name}-increase`)
+}
+
 function buyUpgrade(upgrade) {
-  const mu = upgrades.find((u) => {
-    if (u.name === upgrade) return u
-  })
+  const mu = upgrades.find((u) => u.name === upgrade)
+  if (!mu || parsedBuck < mu.parsedCost) return
 
   const upgradeDiv = document.getElementById(`${mu.name}-upgrade`)
   const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
   const nextLevelP = document.getElementById(`${mu.name}-next-p`)
 
-  if (parsedGem >= mu.parsedCost) {
-    const upgradeSound = new Audio('/assets/audio/upgrade.mp3')
-    upgradeSound.volume = 0.1
-    upgradeSound.play()
+  const upgradeSound = new Audio('/assets/audio/upgrade.mp3')
+  upgradeSound.volume = 0.1
+  upgradeSound.play().catch(() => {})
 
-    gem.innerHTML = Math.round(parsedGem -= mu.parsedCost);
+  parsedBuck -= mu.parsedCost;
+  buck.innerHTML = Math.round(parsedBuck);
 
-    let index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
+  let index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
 
-    if ( index !== -1 ) {
-      upgradeDiv.style.cssText = `border-color: white`;
-      nextLevelDiv.style.cssText =  `background-color: #5A5959; font-weight: normal`;
-      mu.cost.innerHTML = Math.round(mu.parsedCost *= mu.costMultiplier)
+  if (index !== -1) {
+    const multiplier = mu.powerUps?.[index]?.multiplier ?? 2
+    upgradeDiv.style.cssText = `border-color: white`;
+    nextLevelDiv.style.cssText = `background-color: #5A5959; font-weight: normal`;
+    mu.parsedCost *= mu.costMultiplier;
+    mu.cost.innerHTML = Math.round(mu.parsedCost);
 
-      if ( mu.name === 'clicker' ) {
-        gpc *= mu.powerUps[index].multiplier
-        nextLevelP.innerHTML = `+${mu.parsedIncrease} gems per click`
-      } else {
-        gps -= mu.power
-        mu.power *= mu.powerUps[index].multiplier
-        gps += mu.power
-        nextLevelP.innerHTML = `+${mu.parsedIncrease} gems per second`
-      }
-    } 
-
-    mu.level.innerHTML ++
-
-    index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
-
-    if ( index !== -1 ) {
-      upgradeDiv.style.cssText = `border-color: orange`;
-      nextLevelDiv.style.cssText =  `background-color: #CC4500; font-weight: bold`;
-      nextLevelP.innerText = mu.powerUps[index].description
-
-      mu.cost.innerHTML = Math.round(mu.parsedCost * 2.5 * 1.004 ** parseFloat(mu.level.innerHTML))
+    if (mu.name === 'cursor') {
+      sbc *= multiplier
+      nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per click`
     } else {
-      mu.cost.innerHTML = Math.round(mu.parsedCost *= mu.costMultiplier)
-      mu.parsedIncrease = parseFloat((mu.parsedIncrease * mu.gemMultiplier).toFixed(2))
-
-      if ( mu.name === 'clicker') nextLevelP.innerHTML = `+${mu.parsedIncrease} gems per click`
-      else nextLevelP.innerHTML = `+${mu.parsedIncrease} gems per second`
-    }
-
-    if ( mu.name === 'clicker' ) gpc += mu.parsedIncrease
-    else {
-      gps -= mu.power
-      mu.power += mu.parsedIncrease
-      gps += mu.power
+      sbs -= mu.power
+      mu.power *= multiplier
+      sbs += mu.power
+      nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per second`
     }
   }
+
+  mu.level.innerHTML++
+
+  index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
+
+  if (index !== -1) {
+    upgradeDiv.style.cssText = `border-color: orange`;
+    nextLevelDiv.style.cssText = `background-color: #CC4500; font-weight: bold`;
+    nextLevelP.innerText = mu.powerUps?.[index]?.description ?? 'Milestone reached'
+
+    mu.parsedCost *= 2.5 * 1.004 ** parseFloat(mu.level.innerHTML)
+    mu.cost.innerHTML = Math.round(mu.parsedCost)
+  } else {
+    mu.parsedCost *= mu.costMultiplier
+    mu.cost.innerHTML = Math.round(mu.parsedCost)
+    mu.parsedIncrease = parseFloat((mu.parsedIncrease * mu.buckMultiplier).toFixed(2))
+
+    if (mu.name === 'cursor') nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per click`
+    else nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per second`
+  }
+
+  if (mu.name === 'cursor') sbc += mu.parsedIncrease
+  else {
+    sbs -= mu.power
+    mu.power += mu.parsedIncrease
+    sbs += mu.power
+  }
+  renderUpgradeInfo(mu)
 }
 
 function save () {
-  localStorage.clear()
-
-  upgrades.map((upgrade) => {
-
+  upgrades.forEach((upgrade) => {
     const obj = JSON.stringify({
       parsedLevel: parseFloat(upgrade.level.innerHTML),
       parsedCost: upgrade.parsedCost,
-      parsedIncrease: upgrade.parsedIncrease
+      parsedIncrease: upgrade.parsedIncrease,
+      power: upgrade.power ?? 0
     })
 
     localStorage.setItem(upgrade.name, obj)
-
   })
 
-  localStorage.setItem('gpc', JSON.stringify(gpc))
-  localStorage.setItem('gps', JSON.stringify(gps))
-  localStorage.setItem('gem', JSON.stringify(parsedGem))
+  localStorage.setItem('sbc', JSON.stringify(sbc))
+  localStorage.setItem('sbs', JSON.stringify(sbs))
+  localStorage.setItem('buck', JSON.stringify(parsedBuck))
+  localStorage.setItem('relic', JSON.stringify(parseInt(relic.innerHTML, 10)))
 }
 
 function load () {
-  upgrades.map((upgrade) => {
-    const savedValues = JSON.parse(localStorage.getItem(upgrade.name))
+  upgrades.forEach((upgrade) => {
+    const savedData = localStorage.getItem(upgrade.name)
+    if (!savedData) return
 
+    const savedValues = JSON.parse(savedData)
     upgrade.parsedCost = savedValues.parsedCost
     upgrade.parsedIncrease = savedValues.parsedIncrease
+    upgrade.power = savedValues.power ?? 0
 
     upgrade.level.innerHTML = savedValues.parsedLevel
     upgrade.cost.innerHTML = Math.round(upgrade.parsedCost)
     upgrade.increase.innerHTML = upgrade.parsedIncrease
+    renderUpgradeInfo(upgrade)
   })
 
-  gpc = JSON.parse(localStorage.getItem('gpc'))
-  gps = JSON.parse(localStorage.getItem('gps'))
-  parsedGem = JSON.parse(localStorage.getItem('gem'))
+  const savedSbc = localStorage.getItem('sbc')
+  const savedSbs = localStorage.getItem('sbs')
+  const savedBuck = localStorage.getItem('buck')
+  if (savedSbc !== null) sbc = JSON.parse(savedSbc)
+  if (savedSbs !== null) sbs = JSON.parse(savedSbs)
+  if (savedBuck !== null) parsedBuck = JSON.parse(savedBuck)
+  const savedRelic = localStorage.getItem('relic')
+  if (savedRelic !== null) relic.innerHTML = JSON.parse(savedRelic)
 
-  gem.innerHTML = Math.round(parsedGem)
+  buck.innerHTML = Math.round(parsedBuck)
+  renderStats()
 }
 
 function prestige () {
-  upgrades.map((upgrade) => {
-    const mu = defaultUpgradeValues.find((u) => { if (upgrade.name === u.name) return u })
+  if (parsedBuck < 1_000_000) return
 
+  upgrades.forEach((upgrade) => {
+    const mu = defaultUpgradeValues.find((u) => upgrade.name === u.name)
     upgrade.parsedCost = mu.cost
     upgrade.parsedIncrease = mu.increase
+    upgrade.power = 0
 
     upgrade.level.innerHTML = 0
     upgrade.cost.innerHTML = mu.cost
@@ -162,33 +190,32 @@ function prestige () {
 
     const upgradeDiv = document.getElementById(`${mu.name}-upgrade`)
     const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
-    const nextLevelP = document.getElementById(`${mu.name}-next-p`)
-
     upgradeDiv.style.cssText = `border-color: white`;
     nextLevelDiv.style.cssText =  `background-color: #5A5959; font-weight: normal`;
-    nextLevelP.innerHTML = `+${mu.increase} gems per click`
+    renderUpgradeInfo(upgrade)
   })
 
-  relic.innerHTML = Math.ceil(Math.sqrt(parsedGem - 999999) / 300)
+  relic.innerHTML = parseInt(relic.innerHTML, 10) + Math.ceil(Math.sqrt(parsedBuck - 999999) / 300)
 
-  gpc = 1
-  gps = 0
-  parsedGem = 0
-  gem.innerHTML = parsedGem
+  sbc = 1
+  sbs = 0
+  parsedBuck = 0
+  buck.innerHTML = parsedBuck
+  renderStats()
 }
 
+function renderStats() {
+  sbcText.innerHTML = Math.round(sbc)
+  sbsText.innerHTML = Math.round(sbs)
+  prestigeButton.style.display = parsedBuck >= 1_000_000 ? "block" : "none"
+}
+
+upgrades.forEach(renderUpgradeInfo)
+
 setInterval(() => {
-  parsedGem += gps / 10
-  gem.innerHTML = Math.round(parsedGem)
-  gpcText.innerHTML = Math.round(gpc)
-  gpsText.innerHTML = Math.round(gps);
-  bgm.play()
-  
-  if (parsedGem >= 1_000_000) {
-    prestigeButton.style.display = "block"
-  } else {
-    prestigeButton.style.display = "none"
-  }
+  parsedBuck += sbs / 10
+  buck.innerHTML = Math.round(parsedBuck)
+  renderStats()
 }, 100)
 
 skillsNavButton.addEventListener("click", function() {
@@ -218,7 +245,7 @@ artifactsNavButton.addEventListener("click", function() {
   })
 })
 
-window.incrementGem = incrementGem
+window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 
 window.save = save
 window.load = load

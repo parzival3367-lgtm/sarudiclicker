@@ -4,19 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-    <title>Gem Clicker</title>
+    <title>Sarudi Clicker</title>
   </head>
   <body>
     <section>
       <div class="main">
         <div class="left">
-          <p>Gems <br /><span class="gem-cost pink-text">1500000</span></p>
-          <div class="gem-img-container">
+          <p>Sarudi Bucks <br /><span class="sarudi-cost brown-text">1500000</span></p>
+          <div class="sarudi-img-container">
             <img
-              src="./assets/gem.png"
+              src="./assets/sarudi.png"
               alt=""
-              class="gem-image"
-              onclick="incrementGem(event)"
+              class="sarudi-image"
+              onclick="incrementBuck(event)"
               draggable="false"
             />
           </div>
@@ -35,14 +35,14 @@
               <h4>{{name}}</h4>
               <div class="cost-info">
                 <p class="cost-text"><span class="{{name}}-cost">{{cost}}</span></p>
-                <img src="/assets/gem.png" alt="" class="gem-img" />
+                <img src="/assets/sarudi.png" alt="" class="sarudi-img" />
               </div>
             </div>
             <div class="right-section">Level <span class="{{name}}-level">0</span></div>
 
             <div class="next-level-info" id="{{name}}-next-level">
               <p id="{{name}}-next-p">
-                +<span class="{{name}}-increase">{{increase}}</span> gems <br /> per click
+                +<span class="{{name}}-increase">{{increase}}</span> Sarudi Bucks <br /> per click
               </p>
             </div>
           </div>
@@ -61,8 +61,8 @@
 
       <div class="statistics">
         <div class="texts">
-          <p>GPC: <span id="gpc-text" class="pink-text">1</span></p>
-          <p>GPS: <span id="gps-text" class="pink-text">0</span></p>
+          <p>SBC: <span id="sbc-text" class="brown-text">1</span></p>
+          <p>SBS: <span id="sbs-text" class="brown-text">0</span></p>
         </div>
       </div>
 

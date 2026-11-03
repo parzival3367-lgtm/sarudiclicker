@@ -331,7 +331,7 @@ function triggerBuff() {
         applyBuff('Frenzy', 77, 'second', 7);
     }
     else if (roll === 'clickFrenzy') {
-        applyBuff('Click Frenzy', 13, 'click', 777);
+        applyBuff('Click Frenzy', 13, 'click', 77);
     }
 }
 function applyBuff(name, durationSeconds, rate, multiplier) {

@@ -50,7 +50,7 @@ function incrementBuck(event) {
 const timeout = (div) => {
   setTimeout(() => {
     div.remove()
-  }, 3000)
+  }, 5000)
 }
 
 function renderUpgradeInfo(upgrade) {

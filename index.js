@@ -166,6 +166,10 @@ function load () {
 
     const savedValues = JSON.parse(savedData)
     upgrade.parsedCost = savedValues.parsedCost
+    if (upgrade.name === 'summoner' && savedValues.parsedLevel === 0) {
+      const defaultSummoner = defaultUpgradeValues.find((value) => value.name === 'summoner')
+      upgrade.parsedCost = Math.max(upgrade.parsedCost, defaultSummoner.cost)
+    }
     upgrade.parsedIncrease = savedValues.parsedIncrease
     upgrade.power = savedValues.power ?? 0
 
@@ -327,23 +331,28 @@ function triggerBuff() {
 
     if (roll === 'lucky' && parsedBuck > 0) {
 
-        const baseReward = Math.max(getBuffedRate('second') * 900, parsedBuck * 0.15);
-        const reward = Math.floor(baseReward * (0.5 + Math.random()));
+        const summoner = upgrades.find((upgrade) => upgrade.name === 'summoner');
+        const rewardCap = (summoner?.parsedCost ?? 300000) * 0.05;
+        const baseReward = Math.max(getBuffedRate('second') * 5, parsedBuck * 0.02);
+        const reward = Math.min(
+          Math.floor(baseReward * (0.75 + Math.random() * 0.5)),
+          rewardCap
+        );
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
     }
     else if (roll === 'lucky' && parsedBuck === 0) {
-        const reward = Math.floor(Math.random() * 130) + 607; 
+        const reward = Math.floor(Math.random() * 101) + 100;
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
     }
     else if (roll === 'frenzy' && !getActiveBuffs().some((buff) => buff.name === 'Frenzy')) {
-        applyBuff('Frenzy', 77, 'second', 7);
+        applyBuff('Frenzy', 6, 'second', 4);
     }
     else if (roll === 'clickFrenzy' && !getActiveBuffs().some((buff) => buff.name === 'Click Frenzy')) {
-        applyBuff('Click Frenzy', 13, 'click', 17);
+        applyBuff('Click Frenzy', 8, 'click', 3);
     }
     else {
         showPopupText(`Unlucky!`);

@@ -3,7 +3,7 @@ export const defaultUpgradeValues = [
   {name: 'paycheck', image: './assets/paycheck.png', cost: 300, increase: 4, type: "upgrade"},
   {name: 'printer', image: './assets/printer.png', cost: 1020, increase: 32, type: "upgrade"},
   {name: 'mafia', image: './assets/mafia-boss.png', cost: 5000, increase: 410, type: "upgrade"},
-  {name: 'summoner', image: './assets/sarudicircle.png', cost: 100000, increase: 5500, type: "upgrade"},
+  {name: 'summoner', image: './assets/sarudicircle.png', cost: 300000, increase: 5500, type: "upgrade"},
 ]
 
 export const defaultSkillValues = [

@@ -17,6 +17,8 @@ const prestigeButton = document.querySelector(".prestige-button");
 
 const relic = document.getElementById("relic");
 const lastSave = document.getElementById("last-save-text");
+const lastSaveKey = "lastSave";
+lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
 
 let sbc = 1;
 let sbs = 0;
@@ -145,6 +147,9 @@ function save () {
   localStorage.setItem('sbs', JSON.stringify(sbs))
   localStorage.setItem('buck', JSON.stringify(parsedBuck))
   localStorage.setItem('relic', JSON.stringify(parseInt(relic.innerHTML, 10)))
+  const savedAt = new Date().toLocaleString();
+  localStorage.setItem(lastSaveKey, savedAt);
+  lastSave.textContent = savedAt;
 }
 
 function load () {
@@ -161,8 +166,6 @@ function load () {
     upgrade.cost.innerHTML = Math.round(upgrade.parsedCost)
     upgrade.increase.innerHTML = upgrade.parsedIncrease
 
-    lastSave.innerHTML = browserTime;
-
     renderUpgradeInfo(upgrade)
   })
 
@@ -174,6 +177,7 @@ function load () {
   if (savedBuck !== null) parsedBuck = JSON.parse(savedBuck)
   const savedRelic = localStorage.getItem('relic')
   if (savedRelic !== null) relic.innerHTML = JSON.parse(savedRelic)
+  lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
 
   buck.innerHTML = Math.round(parsedBuck)
   renderStats()
@@ -249,11 +253,8 @@ artifactsNavButton.addEventListener("click", function() {
   })
 })
 
-const browserTime = new Date().toLocaleString(); 
-
 setInterval(() => {
   save();
-  lastSave.innerHTML = browserTime;
 }, 30000)
 
 window.incrementBuck = incrementBuck

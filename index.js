@@ -16,6 +16,7 @@ const artifactsNavButton = document.getElementById('artifacts-nav-button');
 const prestigeButton = document.querySelector(".prestige-button");
 
 const relic = document.getElementById("relic");
+const lastSave = document.getElementById("last-save-text");
 
 let sbc = 1;
 let sbs = 0;
@@ -244,6 +245,13 @@ artifactsNavButton.addEventListener("click", function() {
     else container.style.display = "none"
   })
 })
+
+const browserTime = new Date().toLocaleString(); 
+
+setInterval(() => {
+  save();
+  lastSave.innerHTML = browserTime;
+}, 30000)
 
 window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 

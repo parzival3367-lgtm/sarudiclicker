@@ -1,9 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
 
-* {
-  box-sizing: border-box;
-}
-
 :root {
   --color-cream: #EED9C4;
   --color-green: #326e50;
@@ -23,7 +19,7 @@ body {
   text-decoration: none;
   display: grid;
   place-items: center;
-  min-height: 100vh;
+  height: 100vh;
   position: relative;
   font-family: 'Quicksand', sans-serif;
   user-select: none;
@@ -31,10 +27,8 @@ body {
 
 .main {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: clamp(24px, 8vw, 200px);
-  margin-bottom: 24px;
+  gap: 200px;
+  margin-bottom: 100px;
 }
 
 .left {
@@ -71,7 +65,7 @@ body {
 
 #upgrades-container {
   max-height: 400px;
-  width: min(400px, calc(100vw - 32px));
+  width: 400px;
   padding: 20px;
   overflow-y: scroll;
   border: 2px var(--color-brown) solid;
@@ -117,7 +111,7 @@ body {
   border: 3px solid var(--color-green);
   border-radius: 5px;
   height: 60px;
-  width: 100%;
+  width: 330px;
   position: relative;
   margin-bottom: 20px;
 }
@@ -186,13 +180,15 @@ body {
 }
 
 .statistics {
-  position: static;
-  width: min(450px, 100%);
+  position: absolute;
+  bottom: 0;
+  width: 450px;
   padding: 30px;
   border: 2px var(--color-green) solid;
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
-  margin: 0 auto;
+  left: 50%;
+  transform: translate(-50%)
 }
 
 .texts {
@@ -349,16 +345,40 @@ body {
   background: var(--color-green)
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   body {
     height: auto;
-    padding: 80px 16px 16px;
+    min-height: 100vh;
+    display: block;
+    padding: 16px;
+  }
+
+  section {
+    width: 100%;
   }
 
   .main {
     flex-direction: column;
     align-items: center;
     gap: 32px;
+    margin-bottom: 24px;
+  }
+
+  #upgrades-container {
+    box-sizing: border-box;
+    width: min(400px, calc(100vw - 32px));
+  }
+
+  .upgrade {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .statistics {
+    position: static;
+    box-sizing: border-box;
+    width: min(450px, 100%);
+    margin: 0 auto;
   }
 
   .right-navbar {
@@ -369,6 +389,21 @@ body {
   .right-navbar > div {
     flex: 1 1 110px;
     width: auto;
+  }
+
+  .util-buttons {
+    position: static;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 16px 0;
+  }
+
+  .relic,
+  .last-save {
+    position: static;
+    transform: none;
+    text-align: center;
+    margin: 8px 0;
   }
 
   .texts {

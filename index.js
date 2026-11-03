@@ -231,6 +231,10 @@ function getBuffedRate(rate) {
     .reduce((currentRate, buff) => currentRate * buff.multiplier, baseRate);
 }
 
+function getActiveBuffs() {
+  return [...activeBuffs.values()];
+}
+
 upgrades.forEach(renderUpgradeInfo)
 
 setInterval(() => {
@@ -320,23 +324,32 @@ function triggerBuff() {
     const choices = ['lucky', 'frenzy', 'clickFrenzy'];
     const roll = choices[Math.floor(Math.random() * choices.length)];
 
-    if (roll === 'lucky') {
+    if (roll === 'lucky' && parsedBuck > 0) {
 
         const reward = Math.max(getBuffedRate('second') * 900, parsedBuck * 0.15);
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
     }
-    else if (roll === 'frenzy') {
+    else if (roll === 'lucky' && parsedBuck === 0) {
+        const reward = Math.floor(Math.random() * 130) + 607; 
+        parsedBuck += reward;
+        buck.innerHTML = Math.round(parsedBuck);
+        showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
+    }
+    else if (roll === 'frenzy' && !getActiveBuffs().some((buff) => buff.name === 'Frenzy')) {
         applyBuff('Frenzy', 77, 'second', 7);
     }
-    else if (roll === 'clickFrenzy') {
-        applyBuff('Click Frenzy', 13, 'click', 77);
+    else if (roll === 'clickFrenzy' && !getActiveBuffs().some((buff) => buff.name === 'Click Frenzy')) {
+        applyBuff('Click Frenzy', 13, 'click', 17);
+    }
+    else {
+        showPopupText(`Unlucky!`);
     }
 }
 function applyBuff(name, durationSeconds, rate, multiplier) {
     const buffId = nextBuffId++;
-    activeBuffs.set(buffId, { rate, multiplier });
+    activeBuffs.set(buffId, { name, rate, multiplier });
     showPopupText(`${name}!`);
     renderStats();
     setTimeout(() => {
@@ -371,4 +384,5 @@ window.save = save
 window.load = load
 window.prestige = prestige
 window.playMusic = playMusic
+window.getActiveBuffs = getActiveBuffs
 window.spawnGoldenSarudi = spawnGoldenSarudi

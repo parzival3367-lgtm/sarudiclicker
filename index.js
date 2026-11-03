@@ -24,7 +24,8 @@ let sbc = 1;
 let sbs = 0;
 
 const bgm = new Audio('/assets/audio/aria-math.mp3')
-bgm.volume = 0
+bgm.volume = 0.5
+bgm.loop = true;
 
 function incrementBuck(event) {
   const clickingSound = new Audio('/assets/audio/click.wav')
@@ -257,6 +258,18 @@ artifactsNavButton.addEventListener("click", function() {
 setInterval(() => {
   save();
 }, 30000)
+
+function playMusic() {
+
+    if (bgm.paused) {
+        bgm.play();
+        toggleBtn.textContent = "Pause Music";
+    } else {
+        bgm.pause();
+        toggleBtn.textContent = "Play Music";
+    }
+};
+
 
 window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 

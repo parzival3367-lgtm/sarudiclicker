@@ -375,3 +375,51 @@ body {
     margin: 0 auto;
   }
 }
+
+#golden-sarudi-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+}
+
+.golden-sarudi {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    background-image: url('./assets/goldensarudi.png');
+    background-size: cover;
+    cursor: pointer;
+    pointer-events: auto;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.popup-text {
+    position: fixed;
+    top: 18%;
+    left: 50%;
+    z-index: 1000;
+    transform: translateX(-50%);
+    padding: 12px 20px;
+    border: 2px solid var(--color-brown);
+    border-radius: 10px;
+    background: var(--color-green);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 25%);
+    color: var(--color-cream);
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 1s ease;
+    animation: popup-appear 0.25s ease-out;
+}
+
+@keyframes popup-appear {
+    from { opacity: 0; transform: translate(-50%, 8px) scale(0.95); }
+    to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}

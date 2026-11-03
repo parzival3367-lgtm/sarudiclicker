@@ -22,6 +22,8 @@ lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
 
 let sbc = 1;
 let sbs = 0;
+const activeBuffs = new Map();
+let nextBuffId = 0;
 
 const musicButton = document.getElementById("music-button");
 const bgm = new Audio(new URL("./assets/audio/aria-math.mp3", import.meta.url))
@@ -34,14 +36,15 @@ function incrementBuck(event) {
     console.error("Unable to play click sound:", error);
   });
 
-  parsedBuck += sbc;
+  const clickPower = getBuffedRate('click');
+  parsedBuck += clickPower;
   buck.innerHTML = Math.round(parsedBuck);
 
   const x = (event?.offsetX ?? 0) + (Math.random() * 8 - 4) 
   const y = (event?.offsetY ?? 0) -8 + (Math.random() * 8 - 4) 
 
   const div = document.createElement('div')
-  div.innerHTML = `+${Math.round(sbc)}`
+  div.innerHTML = `+${Math.round(clickPower)}`
   div.style.cssText = `color: #326e50; position: absolute; top: ${y}px; left: ${x}px; font-size: 20px; pointer-events: none; font-weight: bold; text-shadow: 1px 1px 2px #000;`
   sarudiImgContainer.appendChild(div)
 
@@ -91,7 +94,6 @@ function buyUpgrade(upgrade) {
   if (index !== -1) {
     const multiplier = mu.powerUps?.[index]?.multiplier ?? 2
     upgradeDiv.style.cssText = `border-color: #326e50`;
-    nextLevelDiv.style.cssText = `background-color: #326e50; color: #EED9C4; font-weight: normal`;
     mu.parsedCost *= mu.costMultiplier;
     mu.cost.innerHTML = Math.round(mu.parsedCost);
 
@@ -217,15 +219,22 @@ function prestige () {
 }
 
 function renderStats() {
-  sbcText.innerHTML = Math.round(sbc)
-  sbsText.innerHTML = Math.round(sbs)
+  sbcText.innerHTML = Math.round(getBuffedRate('click'))
+  sbsText.innerHTML = Math.round(getBuffedRate('second'))
   prestigeButton.disabled = parsedBuck < 1_000_000
+}
+
+function getBuffedRate(rate) {
+  const baseRate = rate === 'click' ? sbc : sbs;
+  return [...activeBuffs.values()]
+    .filter((buff) => buff.rate === rate)
+    .reduce((currentRate, buff) => currentRate * buff.multiplier, baseRate);
 }
 
 upgrades.forEach(renderUpgradeInfo)
 
 setInterval(() => {
-  parsedBuck += sbs / 10
+  parsedBuck += getBuffedRate('second') / 10
   buck.innerHTML = Math.round(parsedBuck)
   renderStats()
 }, 100)
@@ -279,6 +288,82 @@ bgm.addEventListener("pause", () => {
   musicButton.textContent = "Play Music";
 });
 
+const layer = document.getElementById('golden-sarudi-layer');
+function spawnGoldenSarudi() {
+    const gs = document.createElement('div');
+    gs.className = 'golden-sarudi';
+
+
+    const padding = 80;
+    const x = Math.random() * (window.innerWidth - padding);
+    const y = Math.random() * (window.innerHeight - padding);
+    gs.style.left = `${x}px`;
+    gs.style.top = `${y}px`;
+
+
+    gs.onclick = () => {
+        triggerBuff();
+        gs.remove();
+        clearTimeout(expireTimer);
+    };
+
+
+    const expireTimer = setTimeout(() => {
+        gs.style.transition = "opacity 0.5s";
+        gs.style.opacity = 0;
+        setTimeout(() => gs.remove(), 500);
+    }, 13000);
+
+    layer.appendChild(gs);
+}
+function triggerBuff() {
+    const choices = ['lucky', 'frenzy', 'clickFrenzy'];
+    const roll = choices[Math.floor(Math.random() * choices.length)];
+
+    if (roll === 'lucky') {
+
+        const reward = Math.max(getBuffedRate('second') * 900, parsedBuck * 0.15);
+        parsedBuck += reward;
+        buck.innerHTML = Math.round(parsedBuck);
+        showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
+    }
+    else if (roll === 'frenzy') {
+        applyBuff('Frenzy', 77, 'second', 7);
+    }
+    else if (roll === 'clickFrenzy') {
+        applyBuff('Click Frenzy', 13, 'click', 777);
+    }
+}
+function applyBuff(name, durationSeconds, rate, multiplier) {
+    const buffId = nextBuffId++;
+    activeBuffs.set(buffId, { rate, multiplier });
+    showPopupText(`${name}!`);
+    renderStats();
+    setTimeout(() => {
+        activeBuffs.delete(buffId);
+        renderStats();
+        showPopupText(`${name} wore off.`);
+    }, durationSeconds * 1000);
+}
+
+function showPopupText(text) {
+    const popup = document.createElement('div');
+    popup.className = 'popup-text';
+    popup.textContent = text;
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.style.opacity = 0;
+        setTimeout(() => popup.remove(), 1000);
+    }, 2000);
+}
+
+
+setInterval(() => {
+    if (Math.random() < 0.3) {
+        spawnGoldenSarudi();
+    }
+}, 30000);
 
 window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 
@@ -286,3 +371,4 @@ window.save = save
 window.load = load
 window.prestige = prestige
 window.playMusic = playMusic
+window.spawnGoldenSarudi = spawnGoldenSarudi

@@ -30,8 +30,8 @@ function incrementBuck(event) {
   parsedBuck += sbc;
   buck.innerHTML = Math.round(parsedBuck);
 
-  const x = event?.offsetX ?? 0;
-  const y = event?.offsetY ?? 0;
+  const x = (event?.offsetX ?? 0) + (Math.random() - 0.5) * 20;
+  const y = (event?.offsetY ?? 0) + (Math.random() - 0.5) * 6;
 
   const div = document.createElement('div')
   div.innerHTML = `+${Math.round(sbc)}`

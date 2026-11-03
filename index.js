@@ -33,8 +33,8 @@ function incrementBuck(event) {
   parsedBuck += sbc;
   buck.innerHTML = Math.round(parsedBuck);
 
-  const x = (event?.offsetX ?? 0) + (Math.random() - 0.5) * 20;
-  const y = (event?.offsetY ?? 0) + (Math.random() - 0.5) * 6;
+  const x = (event?.offsetX ?? 0) + (Math.random() - 0.5) * 10;
+  const y = (event?.offsetY ?? 0) + (Math.random() - 0.5) * 4;
 
   const div = document.createElement('div')
   div.innerHTML = `+${Math.round(sbc)}`
@@ -49,7 +49,7 @@ function incrementBuck(event) {
 const timeout = (div) => {
   setTimeout(() => {
     div.remove()
-  }, 800)
+  }, 2800)
 }
 
 function renderUpgradeInfo(upgrade) {

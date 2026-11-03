@@ -160,6 +160,9 @@ function load () {
     upgrade.level.innerHTML = savedValues.parsedLevel
     upgrade.cost.innerHTML = Math.round(upgrade.parsedCost)
     upgrade.increase.innerHTML = upgrade.parsedIncrease
+
+    lastSave.innerHTML = browserTime;
+
     renderUpgradeInfo(upgrade)
   })
 

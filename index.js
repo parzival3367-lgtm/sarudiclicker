@@ -150,7 +150,6 @@ function save() {
 
 function load() {
   loadGameState();
-  createUpgradeCards();
   renderGameState();
 }
 
@@ -182,6 +181,7 @@ function renderStats() {
 }
 
 loadGameState();
+createUpgradeCards();
 renderGameState();
 
 setInterval(() => {

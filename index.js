@@ -1,31 +1,33 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
 import { defaultUpgradeValues } from "./constants/defaultValues.js";
+import { gameState, loadGameState, saveGameState } from "./gamestate.js";
 
 const buck = document.querySelector(".sarudi-cost");
-let parsedBuck = parseFloat(buck.innerHTML);
-
 const sbcText = document.getElementById("sbc-text");
 const sbsText = document.getElementById("sbs-text");
-
 const sarudiImgContainer = document.querySelector('.sarudi-img-container');
-
 const upgradesNavButton = document.getElementById('upgrades-nav-button');
 const skillsNavButton = document.getElementById('skills-nav-button');
 const artifactsNavButton = document.getElementById('artifacts-nav-button');
-
 const prestigeButton = document.querySelector(".prestige-button");
-
 const relic = document.getElementById("relic");
 const lastSave = document.getElementById("last-save-text");
-const lastSaveKey = "lastSave";
-lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
-
-let sbc = 1;
-let sbs = 0;
-
 const musicButton = document.getElementById("music-button");
 const bgm = new Audio(new URL("./assets/audio/aria-math.mp3", import.meta.url))
 bgm.loop = true;
+
+function createUpgradeCards() {
+  const upgradesContainer = document.getElementById("upgrades-container");
+  const template = document.getElementById("upgrade-template").textContent;
+
+  defaultUpgradeValues.forEach((values) => {
+    let html = template;
+    Object.entries(values).forEach(([key, value]) => {
+      html = html.replace(new RegExp(`{{${key}}}`, "g"), value);
+    });
+    upgradesContainer.insertAdjacentHTML("beforeend", html);
+  });
+}
 
 function incrementBuck(event) {
   const clickingSound = new Audio(new URL("./assets/audio/click.wav", import.meta.url))
@@ -34,19 +36,17 @@ function incrementBuck(event) {
     console.error("Unable to play click sound:", error);
   });
 
-  parsedBuck += sbc;
-  buck.innerHTML = Math.round(parsedBuck);
+  gameState.bucks += gameState.bucksPerClick;
+  renderStats();
 
-  const x = (event?.offsetX ?? 0) + (Math.random() * 8 - 4) 
-  const y = (event?.offsetY ?? 0) -8 + (Math.random() * 8 - 4) 
+  const x = (event?.offsetX ?? 0) + (Math.random() * 8 - 4)
+  const y = (event?.offsetY ?? 0) - 8 + (Math.random() * 8 - 4)
 
   const div = document.createElement('div')
-  div.innerHTML = `+${Math.round(sbc)}`
+  div.innerHTML = `+${Math.round(gameState.bucksPerClick)}`
   div.style.cssText = `color: #326e50; position: absolute; top: ${y}px; left: ${x}px; font-size: 20px; pointer-events: none; font-weight: bold; text-shadow: 1px 1px 2px #000;`
   sarudiImgContainer.appendChild(div)
-
   div.classList.add('fade-up')
-
   timeout(div)
 }
 
@@ -56,185 +56,132 @@ const timeout = (div) => {
   }, 5000)
 }
 
-function renderUpgradeInfo(upgrade) {
-  const nextLevelP = document.getElementById(`${upgrade.name}-next-p`)
-  const milestoneIndex = powerUpIntervals.indexOf(parseFloat(upgrade.level.innerHTML))
+function renderUpgrade(upgrade) {
+  const state = gameState.upgrades[upgrade.name];
+  const cost = document.querySelector(`.${upgrade.name}-cost`);
+  const level = document.querySelector(`.${upgrade.name}-level`);
+  const upgradeDiv = document.getElementById(`${upgrade.name}-upgrade`);
+  const nextLevelDiv = document.getElementById(`${upgrade.name}-next-level`);
+  const nextLevelP = document.getElementById(`${upgrade.name}-next-p`);
+  const milestoneIndex = powerUpIntervals.indexOf(state.level);
+
+  cost.textContent = Math.round(state.cost);
+  level.textContent = state.level;
 
   if (milestoneIndex !== -1) {
     const powerUp = upgrade.powerUps?.[milestoneIndex]
-    nextLevelP.innerText = powerUp?.description ?? 'Milestone reached'
-    return
+    nextLevelP.textContent = powerUp?.description ?? 'Milestone reached';
+    upgradeDiv.style.borderColor = "orange";
+    nextLevelDiv.style.cssText = "background-color: #8F4D36; color: #EED9C4; font-weight: bold";
+  } else {
+    const unit = upgrade.name === 'cursor' ? 'click' : 'second';
+    nextLevelP.innerHTML = `+<span class="${upgrade.name}-increase">${state.increase}</span> Sarudi Bucks <br /> per ${unit}`;
+    nextLevelDiv.style.cssText = "background-color: #326e50; color: #EED9C4; font-weight: normal";
+    upgradeDiv.style.borderColor = "#326e50";
   }
-
-  const unit = upgrade.name === 'cursor' ? 'click' : 'second'
-  nextLevelP.innerHTML = `+<span class="${upgrade.name}-increase">${upgrade.parsedIncrease}</span> Sarudi Bucks <br /> per ${unit}`
-  upgrade.increase = nextLevelP.querySelector(`.${upgrade.name}-increase`)
 }
 
-function buyUpgrade(upgrade) {
-  const mu = upgrades.find((u) => u.name === upgrade)
-  if (!mu || parsedBuck < mu.parsedCost) return
+function renderGameState() {
+  upgrades.forEach(renderUpgrade);
+  lastSave.textContent = gameState.lastSave ?? "Never";
+  renderStats();
+}
 
-  const upgradeDiv = document.getElementById(`${mu.name}-upgrade`)
-  const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
-  const nextLevelP = document.getElementById(`${mu.name}-next-p`)
+function buyUpgrade(upgradeName) {
+  const config = upgrades.find((upgrade) => upgrade.name === upgradeName);
+  const state = gameState.upgrades[upgradeName];
+  if (!config || !state || gameState.bucks < state.cost) return;
 
   const upgradeSound = new Audio(new URL("./assets/audio/upgrade.mp3", import.meta.url))
   upgradeSound.volume = 0.1
   upgradeSound.play().catch(() => {})
 
-  parsedBuck -= mu.parsedCost;
-  buck.innerHTML = Math.round(parsedBuck);
+  gameState.bucks -= state.cost;
 
-  let index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
-
+  let index = powerUpIntervals.indexOf(state.level);
   if (index !== -1) {
-    const multiplier = mu.powerUps?.[index]?.multiplier ?? 2
-    upgradeDiv.style.cssText = `border-color: #326e50`;
-    nextLevelDiv.style.cssText = `background-color: #326e50; color: #EED9C4; font-weight: normal`;
-    mu.parsedCost *= mu.costMultiplier;
-    mu.cost.innerHTML = Math.round(mu.parsedCost);
+    const multiplier = config.powerUps?.[index]?.multiplier ?? 2;
+    state.cost *= config.costMultiplier;
 
-    if (mu.name === 'cursor') {
-      sbc *= multiplier
-      nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per click`
+    if (config.name === 'cursor') {
+      gameState.bucksPerClick *= multiplier;
     } else {
-      sbs -= mu.power
-      mu.power *= multiplier
-      sbs += mu.power
-      nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per second`
+      gameState.bucksPerSecond -= state.power;
+      state.power *= multiplier;
+      gameState.bucksPerSecond += state.power;
     }
   }
 
-  mu.level.innerHTML++
-
-  index = powerUpIntervals.indexOf(parseFloat(mu.level.innerHTML))
+  state.level++;
+  index = powerUpIntervals.indexOf(state.level);
 
   if (index !== -1) {
-    upgradeDiv.style.cssText = `border-color: orange`;
-    nextLevelDiv.style.cssText = `background-color: #8F4D36; color: #EED9C4; font-weight: bold`;
-    nextLevelP.innerText = mu.powerUps?.[index]?.description ?? 'Milestone reached'
-
-    mu.parsedCost *= 2.5 * 1.004 ** parseFloat(mu.level.innerHTML)
-    mu.cost.innerHTML = Math.round(mu.parsedCost)
+    state.cost *= 2.5 * 1.004 ** state.level;
   } else {
-    mu.parsedCost *= mu.costMultiplier
-    mu.cost.innerHTML = Math.round(mu.parsedCost)
-    mu.parsedIncrease = parseFloat((mu.parsedIncrease * mu.buckMultiplier).toFixed(2))
-
-    if (mu.name === 'cursor') nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per click`
-    else nextLevelP.innerHTML = `+${mu.parsedIncrease} Sarudi Bucks per second`
+    state.cost *= config.costMultiplier;
+    state.increase = parseFloat((state.increase * config.buckMultiplier).toFixed(2));
   }
 
-  if (mu.name === 'cursor') sbc += mu.parsedIncrease
-  else {
-    sbs -= mu.power
-    mu.power += mu.parsedIncrease
-    sbs += mu.power
+  if (config.name === 'cursor') {
+    gameState.bucksPerClick += state.increase;
+  } else {
+    gameState.bucksPerSecond -= state.power;
+    state.power += state.increase;
+    gameState.bucksPerSecond += state.power;
   }
-  renderUpgradeInfo(mu)
+
+  renderGameState();
 }
 
-function save () {
-  upgrades.forEach((upgrade) => {
-    const obj = JSON.stringify({
-      parsedLevel: parseFloat(upgrade.level.innerHTML),
-      parsedCost: upgrade.parsedCost,
-      parsedIncrease: upgrade.parsedIncrease,
-      power: upgrade.power ?? 0
-    })
-
-    localStorage.setItem(upgrade.name, obj)
-  })
-
-  localStorage.setItem('sbc', JSON.stringify(sbc))
-  localStorage.setItem('sbs', JSON.stringify(sbs))
-  localStorage.setItem('buck', JSON.stringify(parsedBuck))
-  localStorage.setItem('relic', JSON.stringify(parseInt(relic.innerHTML, 10)))
-  const savedAt = new Date().toLocaleString();
-  localStorage.setItem(lastSaveKey, savedAt);
-  lastSave.textContent = savedAt;
+function save() {
+  lastSave.textContent = saveGameState();
 }
 
-function load () {
-  upgrades.forEach((upgrade) => {
-    const savedData = localStorage.getItem(upgrade.name)
-    if (!savedData) return
-
-    const savedValues = JSON.parse(savedData)
-    upgrade.parsedCost = savedValues.parsedCost
-    upgrade.parsedIncrease = savedValues.parsedIncrease
-    upgrade.power = savedValues.power ?? 0
-
-    upgrade.level.innerHTML = savedValues.parsedLevel
-    upgrade.cost.innerHTML = Math.round(upgrade.parsedCost)
-    upgrade.increase.innerHTML = upgrade.parsedIncrease
-
-    renderUpgradeInfo(upgrade)
-  })
-
-  const savedSbc = localStorage.getItem('sbc')
-  const savedSbs = localStorage.getItem('sbs')
-  const savedBuck = localStorage.getItem('buck')
-  if (savedSbc !== null) sbc = JSON.parse(savedSbc)
-  if (savedSbs !== null) sbs = JSON.parse(savedSbs)
-  if (savedBuck !== null) parsedBuck = JSON.parse(savedBuck)
-  const savedRelic = localStorage.getItem('relic')
-  if (savedRelic !== null) relic.innerHTML = JSON.parse(savedRelic)
-  lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
-
-  buck.innerHTML = Math.round(parsedBuck)
-  renderStats()
+function load() {
+  loadGameState();
+  renderGameState();
 }
 
-function prestige () {
-  if (parsedBuck < 1_000_000) return
+function prestige() {
+  if (gameState.bucks < 1_000_000) return;
 
   upgrades.forEach((upgrade) => {
-    const mu = defaultUpgradeValues.find((u) => upgrade.name === u.name)
-    upgrade.parsedCost = mu.cost
-    upgrade.parsedIncrease = mu.increase
-    upgrade.power = 0
+    const state = gameState.upgrades[upgrade.name];
+    const defaults = defaultUpgradeValues.find((item) => item.name === upgrade.name);
+    state.level = 0;
+    state.cost = defaults.cost;
+    state.increase = defaults.increase;
+    state.power = 0;
+  });
 
-    upgrade.level.innerHTML = 0
-    upgrade.cost.innerHTML = mu.cost
-    upgrade.increase.innerHTML = mu.increase
-
-    const upgradeDiv = document.getElementById(`${mu.name}-upgrade`)
-    const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
-    upgradeDiv.style.cssText = `border-color: #326e50`;
-    nextLevelDiv.style.cssText =  `background-color: #326e50; color: #EED9C4; font-weight: normal`;
-    renderUpgradeInfo(upgrade)
-  })
-
-  relic.innerHTML = parseInt(relic.innerHTML, 10) + Math.ceil(Math.sqrt(parsedBuck - 999999) / 300)
-
-  sbc = 1
-  sbs = 0
-  parsedBuck = 0
-  buck.innerHTML = parsedBuck
-  renderStats()
+  gameState.relics += Math.ceil(Math.sqrt(gameState.bucks - 999999) / 300);
+  gameState.bucksPerClick = 1;
+  gameState.bucksPerSecond = 0;
+  gameState.bucks = 0;
+  renderGameState();
 }
 
 function renderStats() {
-  sbcText.innerHTML = Math.round(sbc)
-  sbsText.innerHTML = Math.round(sbs)
-  prestigeButton.disabled = parsedBuck < 1_000_000
+  buck.textContent = Math.round(gameState.bucks);
+  relic.textContent = gameState.relics;
+  sbcText.textContent = Math.round(gameState.bucksPerClick);
+  sbsText.textContent = Math.round(gameState.bucksPerSecond);
+  prestigeButton.disabled = gameState.bucks < 1_000_000;
 }
 
-upgrades.forEach(renderUpgradeInfo)
+loadGameState();
+renderGameState();
 
 setInterval(() => {
-  parsedBuck += sbs / 10
-  buck.innerHTML = Math.round(parsedBuck)
-  renderStats()
-}, 100)
+  gameState.bucks += gameState.bucksPerSecond / 10;
+  renderStats();
+}, 100);
 
 skillsNavButton.addEventListener("click", function() {
   const upgradeContainers = document.querySelectorAll(".upgrade")
 
   upgradeContainers.forEach((container) => {
-    if ( container.classList.contains('type-skill') ) container.style.display = "flex"
+    if (container.classList.contains('type-skill')) container.style.display = "flex"
     else container.style.display = "none"
   })
 })
@@ -243,7 +190,7 @@ upgradesNavButton.addEventListener("click", function() {
   const upgradeContainers = document.querySelectorAll(".upgrade")
 
   upgradeContainers.forEach((container) => {
-    if ( container.classList.contains('type-upgrade')) container.style.display = "flex"
+    if (container.classList.contains('type-upgrade')) container.style.display = "flex"
     else container.style.display = "none"
   })
 })
@@ -252,7 +199,7 @@ artifactsNavButton.addEventListener("click", function() {
   const upgradeContainers = document.querySelectorAll(".upgrade")
 
   upgradeContainers.forEach((container) => {
-    if ( container.classList.contains('type-artifact')) container.style.display = "flex"
+    if (container.classList.contains('type-artifact')) container.style.display = "flex"
     else container.style.display = "none"
   })
 })
@@ -279,9 +226,8 @@ bgm.addEventListener("pause", () => {
   musicButton.textContent = "Play Music";
 });
 
-
 window.incrementBuck = incrementBuck
-window.buyUpgrade = buyUpgrade 
+window.buyUpgrade = buyUpgrade
 window.save = save
 window.load = load
 window.prestige = prestige

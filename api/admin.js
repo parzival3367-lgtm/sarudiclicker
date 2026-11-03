@@ -1,4 +1,4 @@
-import { createAdminPasswordPrompt } from "./admin-auth.js";
+import { createAdminPasswordPrompt } from "./admin-password-prompt.js";
 
 const adminContent = document.getElementById("admin-content");
 const promptForAdminPassword = createAdminPasswordPrompt(

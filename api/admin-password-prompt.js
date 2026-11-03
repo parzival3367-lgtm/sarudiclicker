@@ -11,7 +11,7 @@ export function createAdminPasswordPrompt(onAuthenticated, onCancel) {
     submitButton.disabled = true;
 
     try {
-      const response = await fetch("/api/admin-auth", {
+      const response = await fetch("/api/verify-admin-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: passwordInput.value }),

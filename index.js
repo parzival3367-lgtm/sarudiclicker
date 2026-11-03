@@ -1,6 +1,10 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
-import { defaultUpgradeValues } from "./constants/defaultValues.js";
-import { gameState, loadGameState, saveGameState } from "./api/gamestate.js";
+import {
+  gameState,
+  loadGameState,
+  saveGameState,
+  upgradeDefinitions,
+} from "./api/gamestate.js";
 
 const buck = document.querySelector(".sarudi-cost");
 const sbcText = document.getElementById("sbc-text");
@@ -20,9 +24,16 @@ function createUpgradeCards() {
   const upgradesContainer = document.getElementById("upgrades-container");
   const template = document.getElementById("upgrade-template").textContent;
 
-  defaultUpgradeValues.forEach((values) => {
+  upgradeDefinitions.forEach((values) => {
+    const state = gameState.upgrades[values.name];
     let html = template;
-    Object.entries(values).forEach(([key, value]) => {
+    const displayValues = {
+      ...values,
+      cost: state.cost,
+      increase: state.increase,
+      level: state.level,
+    };
+    Object.entries(displayValues).forEach(([key, value]) => {
       html = html.replace(new RegExp(`{{${key}}}`, "g"), value);
     });
     upgradesContainer.insertAdjacentHTML("beforeend", html);
@@ -139,6 +150,7 @@ function save() {
 
 function load() {
   loadGameState();
+  createUpgradeCards();
   renderGameState();
 }
 
@@ -147,7 +159,7 @@ function prestige() {
 
   upgrades.forEach((upgrade) => {
     const state = gameState.upgrades[upgrade.name];
-    const defaults = defaultUpgradeValues.find((item) => item.name === upgrade.name);
+    const defaults = upgradeDefinitions.find((item) => item.name === upgrade.name);
     state.level = 0;
     state.cost = defaults.cost;
     state.increase = defaults.increase;

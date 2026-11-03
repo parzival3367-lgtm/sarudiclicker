@@ -104,8 +104,8 @@ export const upgrades = [
     parsedIncrease: parseFloat(document.querySelector(".summoner-increase").innerHTML),
     level: document.querySelector(".summoner-level"),
     power: 0,
-    buckMultiplier: 1.045,
-    costMultiplier: 1.096,
+    buckMultiplier: 1.025,
+    costMultiplier: 1.25,
   },
 ]
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Admin Panel | Sarudi Clicker</title>
+  </head>
+  <body>
+    <main id="admin-content" class="admin-screen" hidden>
+      <h1>Admin Panel</h1>
+      <p>This screen is ready for your admin panel design.</p>
+      <button id="admin-back-button" class="util-button" type="button">Back to game</button>
+    </main>
+
+    <dialog id="admin-password-dialog" class="admin-dialog" aria-labelledby="admin-password-title">
+      <form id="admin-password-form">
+        <h2 id="admin-password-title">Admin password</h2>
+        <label for="admin-password">Enter the admin password to continue.</label>
+        <input id="admin-password" name="password" type="password" autocomplete="current-password" required />
+        <p id="admin-password-error" class="admin-password-error" role="alert" hidden></p>
+        <div class="admin-dialog-actions">
+          <button id="admin-password-cancel" class="util-button" type="button">Cancel</button>
+          <button class="util-button" type="submit">Continue</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script type="module" src="admin.js"></script>
+  </body>
+</html>

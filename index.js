@@ -1,5 +1,6 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
 import { defaultUpgradeValues } from "./constants/defaultValues.js";
+import { createAdminPasswordPrompt } from "./admin-auth.js";
 
 const buck = document.querySelector(".sarudi-cost");
 let parsedBuck = parseFloat(buck.innerHTML);
@@ -326,7 +327,8 @@ function triggerBuff() {
 
     if (roll === 'lucky' && parsedBuck > 0) {
 
-        const reward = Math.max(getBuffedRate('second') * 900, parsedBuck * 0.15);
+        const baseReward = Math.max(getBuffedRate('second') * 900, parsedBuck * 0.15);
+        const reward = Math.floor(baseReward * (0.5 + Math.random()));
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
@@ -373,10 +375,19 @@ function showPopupText(text) {
 
 
 setInterval(() => {
-    if (Math.random() < 0.3) {
+    if (Math.random() > 0.1) {
         spawnGoldenSarudi();
     }
-}, 30000);
+}, 60000);
+
+const promptForAdminPassword = createAdminPasswordPrompt(() => {
+  sessionStorage.setItem("adminEntryVerified", "true");
+  window.location.assign("/admin.html");
+});
+
+function adminPassword() {
+  promptForAdminPassword();
+}
 
 window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 
@@ -386,3 +397,4 @@ window.prestige = prestige
 window.playMusic = playMusic
 window.getActiveBuffs = getActiveBuffs
 window.spawnGoldenSarudi = spawnGoldenSarudi
+window.adminPassword = adminPassword

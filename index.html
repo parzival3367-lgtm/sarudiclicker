@@ -66,7 +66,6 @@
         <div class="texts">
           <p>SBC: <span id="sbc-text" class="brown-text">1</span></p>
           <p>SBS: <span id="sbs-text" class="brown-text">0</span></p>
-          <button class="testing" onclick="spawnGoldenSarudi()">Spawn Golden Sarudi</button>
         </div>
       </div>
 
@@ -75,6 +74,7 @@
         <button class="util-button" onclick="save()">Save</button>
         <button class="util-button" onclick="load()">Load</button>
         <button id="music-button" class="util-button" onclick="playMusic()">Play Music</button>
+        <button id="admin-panel-button" class="util-button" onclick="adminPassword()">Admin Panel</button>
       </div>
 
       <div class="relic">
@@ -84,6 +84,19 @@
         Last Save: <span id="last-save-text">Never</span>
         </div>
     </section>
+
+    <dialog id="admin-password-dialog" class="admin-dialog" aria-labelledby="admin-password-title">
+      <form id="admin-password-form">
+        <h2 id="admin-password-title">Admin password</h2>
+        <label for="admin-password">Enter the admin password to continue.</label>
+        <input id="admin-password" name="password" type="password" autocomplete="current-password" required />
+        <p id="admin-password-error" class="admin-password-error" role="alert" hidden></p>
+        <div class="admin-dialog-actions">
+          <button id="admin-password-cancel" class="util-button" type="button">Cancel</button>
+          <button class="util-button" type="submit">Continue</button>
+        </div>
+      </form>
+    </dialog>
 
     <script type="module" src="index.js"></script>
   </body>

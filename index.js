@@ -23,14 +23,17 @@ lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
 let sbc = 1;
 let sbs = 0;
 
-const bgm = new Audio('/assets/audio/aria-math.mp3')
+const musicButton = document.getElementById("music-button");
+const bgm = new Audio(new URL("./assets/audio/aria-math.mp3", import.meta.url))
 bgm.volume = 0.5
 bgm.loop = true;
 
 function incrementBuck(event) {
-  const clickingSound = new Audio('/assets/audio/click.wav')
-  clickingSound.getAudio().setVolume(0.5); 
-  clickingSound.play().catch(() => {})
+  const clickingSound = new Audio(new URL("./assets/audio/click.wav", import.meta.url))
+  clickingSound.volume = 0.5;
+  clickingSound.play().catch((error) => {
+    console.error("Unable to play click sound:", error);
+  });
 
   parsedBuck += sbc;
   buck.innerHTML = Math.round(parsedBuck);
@@ -77,7 +80,7 @@ function buyUpgrade(upgrade) {
   const nextLevelDiv = document.getElementById(`${mu.name}-next-level`)
   const nextLevelP = document.getElementById(`${mu.name}-next-p`)
 
-  const upgradeSound = new Audio('/assets/audio/upgrade.mp3')
+  const upgradeSound = new Audio(new URL("./assets/audio/upgrade.mp3", import.meta.url))
   upgradeSound.volume = 0.1
   upgradeSound.play().catch(() => {})
 
@@ -260,15 +263,22 @@ setInterval(() => {
 }, 30000)
 
 function playMusic() {
+  if (bgm.paused) {
+    bgm.play().catch((error) => {
+      console.error("Unable to play background music:", error);
+    });
+  } else {
+    bgm.pause();
+  }
+}
 
-    if (bgm.paused) {
-        bgm.play();
-        toggleBtn.textContent = "Pause Music";
-    } else {
-        bgm.pause();
-        toggleBtn.textContent = "Play Music";
-    }
-};
+bgm.addEventListener("play", () => {
+  musicButton.textContent = "Pause Music";
+});
+
+bgm.addEventListener("pause", () => {
+  musicButton.textContent = "Play Music";
+});
 
 
 window.incrementBuck = incrementBuck
@@ -276,3 +286,4 @@ window.buyUpgrade = buyUpgrade
 window.save = save
 window.load = load
 window.prestige = prestige
+window.playMusic = playMusic

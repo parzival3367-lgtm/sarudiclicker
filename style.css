@@ -411,3 +411,47 @@ body {
     gap: 16px;
   }
 }
+
+@media (min-width: 901px) and (max-height: 800px) {
+  body {
+    display: block;
+    box-sizing: border-box;
+    height: auto;
+    min-height: 100vh;
+    padding: 90px 16px 16px;
+  }
+
+  section {
+    width: 100%;
+  }
+
+  .main {
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .statistics {
+    position: static;
+    box-sizing: border-box;
+    width: min(514px, 100%);
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 976px) and (max-height: 800px) {
+  .main {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  #upgrades-container {
+    box-sizing: border-box;
+    width: min(400px, calc(100vw - 32px));
+  }
+
+  .upgrade {
+    box-sizing: border-box;
+    width: 100%;
+  }
+}

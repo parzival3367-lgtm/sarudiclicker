@@ -1,6 +1,6 @@
 import { powerUpIntervals, upgrades } from "./constants/upgrades.js";
 import { defaultUpgradeValues } from "./constants/defaultValues.js";
-import { createAdminPasswordPrompt } from "./api/admin-password-prompt.js";
+import { createAdminPasswordPrompt } from "./client/admin-password-prompt.js";
 
 const buck = document.querySelector(".sarudi-cost");
 let parsedBuck = parseFloat(buck.innerHTML);

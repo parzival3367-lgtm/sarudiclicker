@@ -221,6 +221,7 @@ function prestige () {
   parsedBuck = 0
   buck.innerHTML = parsedBuck
   renderStats()
+  window.location.href = "/prestige.html"
 }
 
 function renderStats() {
@@ -397,6 +398,23 @@ const promptForAdminPassword = createAdminPasswordPrompt(() => {
 function adminPassword() {
   promptForAdminPassword();
 }
+
+const prestigeDialog = document.getElementById("prestige-dialog");
+const prestigeCancel = document.getElementById("prestige-cancel");
+const prestigeConfirm = document.getElementById("prestige-confirm");
+
+prestigeButton.addEventListener("click", () => {
+  prestigeDialog.showModal();
+});
+
+prestigeConfirm.addEventListener("click", () => {
+  prestige();
+  prestigeDialog.close();
+});
+
+prestigeCancel.addEventListener("click", () => {
+  prestigeDialog.close();
+});
 
 window.incrementBuck = incrementBuck
 window.buyUpgrade = buyUpgrade 

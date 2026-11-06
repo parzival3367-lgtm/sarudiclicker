@@ -19,6 +19,16 @@ const prestigeButton = document.querySelector(".prestige-button");
 const relic = document.getElementById("relic");
 const lastSave = document.getElementById("last-save-text");
 const lastSaveKey = "lastSave";
+const offlineTimestampKey = "lastSeenAt";
+const prestigeUpgradesValue = localStorage.getItem("prestigeUpgrades");
+const prestigeUpgrades = new Set(
+  prestigeUpgradesValue === null ? [] : JSON.parse(prestigeUpgradesValue)
+);
+const gameThemes = ["heaven", "classroom", "lunchroom"];
+const savedTheme = localStorage.getItem("prestigeBackground");
+if (gameThemes.includes(savedTheme)) {
+  document.body.classList.add("game-theme", `theme-${savedTheme}`);
+}
 lastSave.textContent = localStorage.getItem(lastSaveKey) ?? "Never";
 
 let sbc = 1;
@@ -156,6 +166,7 @@ function save () {
   localStorage.setItem('relic', JSON.stringify(parseInt(relic.innerHTML, 10)))
   const savedAt = new Date().toLocaleString();
   localStorage.setItem(lastSaveKey, savedAt);
+  localStorage.setItem(offlineTimestampKey, String(Date.now()));
   lastSave.textContent = savedAt;
 }
 
@@ -192,10 +203,34 @@ function load () {
 
   buck.innerHTML = Math.round(parsedBuck)
   renderStats()
+  applyOfflineEarnings()
+}
+
+function applyOfflineEarnings() {
+  const now = Date.now();
+  const savedTimestamp = localStorage.getItem(offlineTimestampKey);
+  localStorage.setItem(offlineTimestampKey, String(now));
+  if (!prestigeUpgrades.has("skippingClass") || savedTimestamp === null) return;
+
+  const previousTimestamp = Number(savedTimestamp);
+  if (!Number.isFinite(previousTimestamp) || previousTimestamp > now) return;
+
+  const awaySeconds = Math.min((now - previousTimestamp) / 1000, 8 * 60 * 60);
+  const earnings = getBuffedRate("second") * awaySeconds * 0.25;
+  if (earnings <= 0) return;
+
+  parsedBuck += earnings;
+  buck.innerHTML = Math.round(parsedBuck);
+  renderStats();
+  showPopupText(`Welcome back! +${Math.floor(earnings)} Sarudi Bucks from skipping class.`);
+  save();
 }
 
 function prestige () {
   if (parsedBuck < 1_000_000) return
+
+  const relicsEarned = Math.ceil(Math.sqrt(parsedBuck - 999999) / 300);
+  localStorage.setItem("prestigeRelicsEarned", JSON.stringify(relicsEarned));
 
   upgrades.forEach((upgrade) => {
     const mu = defaultUpgradeValues.find((u) => upgrade.name === u.name)
@@ -214,13 +249,14 @@ function prestige () {
     renderUpgradeInfo(upgrade)
   })
 
-  relic.innerHTML = parseInt(relic.innerHTML, 10) + Math.ceil(Math.sqrt(parsedBuck - 999999) / 300)
+  relic.innerHTML = parseInt(relic.innerHTML, 10) + relicsEarned
 
   sbc = 1
   sbs = 0
   parsedBuck = 0
   buck.innerHTML = parsedBuck
   renderStats()
+  save()
   window.location.href = "/prestige.html"
 }
 
@@ -232,9 +268,10 @@ function renderStats() {
 
 function getBuffedRate(rate) {
   const baseRate = rate === 'click' ? sbc : sbs;
+  const artifactMultiplier = prestigeUpgrades.has("teachersPet") ? 1.1 : 1;
   return [...activeBuffs.values()]
     .filter((buff) => buff.rate === rate)
-    .reduce((currentRate, buff) => currentRate * buff.multiplier, baseRate);
+    .reduce((currentRate, buff) => currentRate * buff.multiplier, baseRate) * artifactMultiplier;
 }
 
 function getActiveBuffs() {
@@ -338,13 +375,14 @@ function triggerBuff() {
         const reward = Math.min(
           Math.floor(baseReward * (0.75 + Math.random() * 0.5)),
           rewardCap
-        );
+        ) * (prestigeUpgrades.has("goldenLunchbox") ? 2 : 1);
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
     }
     else if (roll === 'lucky' && parsedBuck === 0) {
-        const reward = Math.floor(Math.random() * 101) + 100;
+        const reward = (Math.floor(Math.random() * 101) + 100)
+          * (prestigeUpgrades.has("goldenLunchbox") ? 2 : 1);
         parsedBuck += reward;
         buck.innerHTML = Math.round(parsedBuck);
         showPopupText(`+${Math.floor(reward)} Sarudi Bucks! Lucky!`);
@@ -425,3 +463,5 @@ window.playMusic = playMusic
 window.getActiveBuffs = getActiveBuffs
 window.spawnGoldenSarudi = spawnGoldenSarudi
 window.adminPassword = adminPassword
+
+if (prestigeUpgrades.has("skippingClass")) load()

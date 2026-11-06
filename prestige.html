@@ -1,26 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prestige</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body class="prestige-page">
-  <h1>Prestige</h1>
-  <div class="relics-info">
-    <p>You have gained <span id="relics-earned">0</span> relics from your prestige.</p>
-  </div>
-  <div class="prestige-actions">
-    <button id="prestige-back" class="util-button" type="button">Back to Game</button>
-  </div>
-  <div class="prestige-upgrades">
-    <div class="prestige-upgrade" id="prestige-upgrade-1">
-      <h3>Prestige Upgrade 1</h3>
-      <p>Cost: <span class="prestige-upgrade-cost">1</span> relics</p>
-      <button class="prestige-upgrade-button" type="button">Purchase</button>
-    </div>
-  </div>  
-</body>
-<script src="index.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Prestige | Sarudi Clicker</title>
+  </head>
+  <body class="prestige-page">
+    <main class="prestige-screen">
+      <header class="prestige-header">
+        <div>
+          <p class="prestige-eyebrow">A fresh start, a brighter future</p>
+          <h1>Prestige</h1>
+        </div>
+        <button id="prestige-back" class="util-button" type="button">Back to Game</button>
+      </header>
+
+      <section class="relics-info" aria-label="Relic balance">
+        <p>You gained <strong id="relics-earned">0</strong> relics this prestige.</p>
+        <p>Available relics: <strong id="relic-balance">0</strong></p>
+      </section>
+
+      <section class="prestige-section">
+        <h2>Prestige upgrades</h2>
+        <div class="prestige-upgrades">
+          <article class="prestige-upgrade" id="prestige-upgrade-heaven">
+            <div>
+              <p class="prestige-upgrade-type">Foundation</p>
+              <h3>Sarudi Heaven</h3>
+              <p>Open the artifact collection and unlock custom school-themed backgrounds.</p>
+              <p class="prestige-upgrade-cost-label">Cost: <strong>1</strong> relic</p>
+            </div>
+            <button class="prestige-upgrade-button util-button" type="button" data-upgrade="sarudiHeaven">Purchase</button>
+          </article>
+
+          <article class="prestige-upgrade" id="prestige-upgrade-skipping-class">
+            <div>
+              <p class="prestige-upgrade-type">Special effect</p>
+              <h3>Skipping Class</h3>
+              <p>Earn 25% of your passive income while away, for up to 8 hours.</p>
+              <p class="prestige-upgrade-cost-label">Cost: <strong>3</strong> relics</p>
+            </div>
+            <button class="prestige-upgrade-button util-button" type="button" data-upgrade="skippingClass">Purchase</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="prestige-section" id="artifacts-shop" hidden>
+        <h2>School artifacts</h2>
+        <div class="prestige-upgrades">
+          <article class="prestige-upgrade">
+            <div>
+              <p class="prestige-upgrade-type">Artifact</p>
+              <h3>Teacher's Pet</h3>
+              <p>Your perfect attendance earns 10% more Sarudi Bucks from every source.</p>
+              <p class="prestige-upgrade-cost-label">Cost: <strong>2</strong> relics</p>
+            </div>
+            <button class="prestige-upgrade-button util-button" type="button" data-upgrade="teachersPet">Purchase</button>
+          </article>
+
+          <article class="prestige-upgrade">
+            <div>
+              <p class="prestige-upgrade-type">Artifact</p>
+              <h3>Golden Lunchbox</h3>
+              <p>Double the Sarudi Bucks earned from lucky Golden Sarudi rewards.</p>
+              <p class="prestige-upgrade-cost-label">Cost: <strong>3</strong> relics</p>
+            </div>
+            <button class="prestige-upgrade-button util-button" type="button" data-upgrade="goldenLunchbox">Purchase</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="prestige-section" id="background-shop" hidden>
+        <h2>Choose your school grounds</h2>
+        <div class="prestige-backgrounds" role="group" aria-label="Custom backgrounds">
+          <button class="prestige-background-button" type="button" data-theme="heaven">Sarudi Heaven</button>
+          <button class="prestige-background-button" type="button" data-theme="classroom">Chalkboard Classroom</button>
+          <button class="prestige-background-button" type="button" data-theme="lunchroom">Golden Lunchroom</button>
+        </div>
+        <p id="background-status" class="background-status" role="status"></p>
+      </section>
+    </main>
+    <script type="module" src="prestige.js"></script>
+  </body>
 </html>
